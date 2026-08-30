@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareDose — One box. Two people watching out for each other.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2E2E;
+    --paper:#EDEEE6;
+    --paper-2:#E3E5DA;
+    --amber:#E8A33D;
+    --amber-soft:#F4CE94;
+    --sage:#6E8F76;
+    --teal:#2F5D5A;
+    --rose:#C1666B;
+    --white:#FCFBF8;
+    --line: rgba(27,46,46,0.14);
+    --display: 'Fraunces', serif;
+    --body: 'Public Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; font-size:112.5%;} /* 18px base — easier reading for older eyes */
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+  a{color:inherit;}
+  img,svg{display:block; max-width:100%;}
+  .wrap{max-width:1160px; margin:0 auto; padding:0 28px;}
+
+  /* Visible, high-contrast focus ring for keyboard users */
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+    outline:3px solid var(--teal); outline-offset:3px; border-radius:8px;
+  }
+  .cta-band :focus-visible, .btn-primary:focus-visible{ outline-color:var(--white); }
+
+  /* Skip link — hidden until focused */
+  .skip-link{
+    position:absolute; left:12px; top:-60px; background:var(--ink); color:var(--white);
+    padding:12px 20px; border-radius:8px; z-index:100; font-weight:600; text-decoration:none;
+    transition:top .15s ease;
+  }
+  .skip-link:focus{ top:12px; }
+
+  .visually-hidden{
+    position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(237,238,230,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px; max-width:1160px; margin:0 auto;
+  }
+  .logo{
+    font-family:var(--display); font-weight:600; font-size:1.35rem;
+    letter-spacing:-0.01em; display:flex; align-items:center; gap:10px;
+  }
+  .logo .dot{width:11px; height:11px; border-radius:50%; background:var(--amber); box-shadow:0 0 0 4px rgba(232,163,61,0.22);}
+  nav.links{display:flex; gap:32px; font-size:1rem; font-weight:600;}
+  nav.links a{text-decoration:none; color:var(--teal); transition:color .15s;}
+  nav.links a:hover, nav.links a:focus-visible{color:var(--ink); text-decoration:underline;}
+  .nav-cta{
+    background:var(--teal); color:var(--white); border:none; padding:12px 22px;
+    min-height:44px; border-radius:100px; font-family:var(--body); font-weight:700; font-size:0.95rem;
+    cursor:pointer; transition:transform .15s ease, background .15s ease;
+  }
+  .nav-cta:hover{background:var(--ink); transform:translateY(-1px);}
+  .nav-mobile-hide{display:flex;}
+  .menu-btn{display:none; background:none; border:1.5px solid var(--line); border-radius:10px; padding:9px 12px; min-height:44px; min-width:44px; cursor:pointer;}
+  .menu-btn span{display:block; width:20px; height:2px; background:var(--ink); margin:4px 0;}
+  #mobileNav{display:none;}
+  @media (max-width:760px){
+    .nav-mobile-hide{display:none;}
+    .menu-btn{display:block;}
+    #mobileNav.open{
+      display:flex; flex-direction:column; position:absolute; top:100%; left:0; right:0;
+      background:var(--white); padding:20px 28px; gap:18px; border-bottom:1px solid var(--line);
+      box-shadow:0 12px 20px rgba(27,46,46,0.08);
+    }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{padding:76px 0 40px; position:relative; overflow:hidden;}
+  .hero-grid{
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center;
+  }
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+  .eyebrow{
+    font-family:var(--mono); font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--teal); display:flex; align-items:center; gap:10px; margin-bottom:20px;
+  }
+  .eyebrow::before{content:''; width:26px; height:1px; background:var(--teal);}
+  h1{
+    font-family:var(--display); font-weight:600; font-size:clamp(2.4rem, 5vw, 3.6rem);
+    line-height:1.05; letter-spacing:-0.02em; margin:0 0 24px;
+  }
+  h1 em{font-style:italic; color:var(--teal); font-weight:500;}
+  .hero p.lede{
+    font-size:1.2rem; max-width:46ch; color:#3A4A4A; margin:0 0 34px;
+  }
+  .hero-actions{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--ink); color:var(--white); border:none; padding:15px 28px;
+    border-radius:100px; font-weight:600; font-size:1rem; cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 10px 24px rgba(27,46,46,0.22);}
+  .btn-ghost{
+    background:transparent; color:var(--ink); border:1.5px solid var(--line); padding:15px 26px;
+    border-radius:100px; font-weight:600; font-size:1rem; cursor:pointer; transition:border-color .15s;
+  }
+  .btn-ghost:hover{border-color:var(--ink);}
+
+  .device-stage{position:relative; display:flex; justify-content:center;}
+  .device-caption{
+    text-align:center; font-family:var(--mono); font-size:0.75rem; color:var(--ink);
+    opacity:0.55; margin-top:14px; letter-spacing:0.02em;
+  }
+
+  .trust{
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    padding:22px 0; font-family:var(--mono); font-size:0.85rem; letter-spacing:0.03em;
+    color:#3A4A4A; font-weight:500;
+  }
+  .trust .wrap{display:flex; gap:40px; flex-wrap:wrap; justify-content:center;}
+
+  .split{padding:100px 0 70px;}
+  .split-head{text-align:center; max-width:640px; margin:0 auto 48px;}
+  .split-head h2{
+    font-family:var(--display); font-size:clamp(1.9rem, 3.4vw, 2.6rem); font-weight:600;
+    letter-spacing:-0.015em; margin:0 0 14px;
+  }
+  .split-head p{color:#3A4A4A; font-size:1.1rem; margin:0;}
+
+  .toggle{
+    display:flex; justify-content:center; gap:0; margin:0 auto 46px;
+    background:var(--paper-2); border-radius:100px; padding:6px; width:fit-content;
+    border:1px solid var(--line);
+  }
+  .toggle button{
+    border:none; background:transparent; padding:14px 26px; min-height:44px; border-radius:100px;
+    font-family:var(--body); font-weight:600; font-size:1rem; cursor:pointer;
+    color:#3A4A4A; transition:all .2s ease;
+  }
+  .toggle button.active{background:var(--ink); color:var(--white);}
+
+  .panel{display:none; animation:fadeIn .4s ease;}
+  .panel.active{display:block;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .panel-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media (max-width:860px){ .panel-grid{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 26px;
+  }
+  .card .num{
+    font-family:var(--mono); font-size:0.78rem; color:var(--teal); opacity:0.8; margin-bottom:14px; display:block;
+  }
+  .card h3{
+    font-family:var(--display); font-size:1.3rem; font-weight:600; margin:0 0 10px; letter-spacing:-0.01em;
+  }
+  .card p{margin:0; color:#3A4A4A; font-size:1.02rem;}
+
+  #panel-elder .card h3{font-size:1.55rem;}
+  #panel-elder .card p{font-size:1.12rem; line-height:1.6;}
+  #panel-elder .card{padding:34px 28px;}
+
+  .loop{padding:70px 0 100px; border-top:1px solid var(--line);}
+  .loop-inner{
+    display:grid; grid-template-columns:1fr auto 1fr; gap:34px; align-items:center;
+  }
+  @media (max-width:800px){ .loop-inner{grid-template-columns:1fr;} }
+  .loop-card{
+    background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+    padding:28px; text-align:center;
+  }
+  .loop-card .tag{
+    display:inline-block; font-family:var(--mono); font-size:0.72rem; text-transform:uppercase;
+    letter-spacing:0.06em; padding:5px 12px; border-radius:100px; margin-bottom:14px;
+  }
+  .tag.elder-tag{background:var(--amber-soft); color:#7a4e0e;}
+  .tag.family-tag{background:#DCE7DE; color:var(--teal);}
+  .loop-card h4{font-family:var(--display); font-size:1.2rem; margin:0 0 8px;}
+  .loop-card p{margin:0; color:#3A4A4A; font-size:1rem;}
+  .loop-arrow{display:flex; align-items:center; justify-content:center;}
+  .loop-arrow svg{width:60px; height:32px;}
+  @media (max-width:800px){ .loop-arrow{transform:rotate(90deg); margin:0 auto;} }
+
+  .features{padding:90px 0; background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .features-head{max-width:560px; margin-bottom:52px;}
+  .features-head h2{font-family:var(--display); font-size:clamp(1.9rem,3.2vw,2.5rem); margin:0 0 14px; letter-spacing:-0.015em;}
+  .features-head p{color:#3A4A4A; font-size:1.1rem; margin:0;}
+  .feat-list{display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+  @media (max-width:760px){ .feat-list{grid-template-columns:1fr;} }
+  .feat{background:var(--white); padding:32px;}
+  .feat h4{font-family:var(--display); font-size:1.15rem; margin:0 0 8px; display:flex; gap:10px; align-items:center;}
+  .feat h4 .ico{width:9px; height:9px; border-radius:50%; background:var(--sage); flex-shrink:0;}
+  .feat p{margin:0; color:#3A4A4A; font-size:1rem;}
+
+  .quote-section{padding:96px 0; text-align:center;}
+  .quote-section blockquote{
+    font-family:var(--display); font-size:clamp(1.5rem, 3vw, 2.1rem); font-weight:500;
+    max-width:780px; margin:0 auto 22px; line-height:1.35; letter-spacing:-0.01em; font-style:italic;
+  }
+  .quote-section cite{font-style:normal; font-family:var(--mono); font-size:0.9rem; color:#3A4A4A;}
+
+  .pricing{padding:20px 0 110px;}
+  .price-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:900px){ .price-grid{grid-template-columns:1fr;} }
+  .price-card{
+    background:var(--white); border:1px solid var(--line); border-radius:var(--radius);
+    padding:34px 28px; display:flex; flex-direction:column;
+  }
+  .price-card.highlight{border-color:var(--ink); box-shadow:0 14px 34px rgba(27,46,46,0.12); position:relative;}
+  .price-card.highlight::before{
+    content:'MOST CHOSEN'; position:absolute; top:-11px; left:28px; background:var(--amber); color:var(--ink);
+    font-family:var(--mono); font-size:0.68rem; letter-spacing:0.06em; padding:4px 12px; border-radius:100px;
+  }
+  .price-card h3{font-family:var(--display); font-size:1.3rem; margin:0 0 6px;}
+  .price-card .price{font-family:var(--display); font-size:2.1rem; font-weight:600; margin:6px 0 4px;}
+  .price-card .price span{font-family:var(--body); font-size:0.95rem; font-weight:600; color:#3A4A4A;}
+  .price-card ul{list-style:none; padding:0; margin:18px 0 26px; flex-grow:1;}
+  .price-card li{padding:10px 0; border-top:1px solid var(--line); font-size:1rem; color:#3A4A4A;}
+  .price-card li:first-child{border-top:none;}
+
+  .cta-band{background:var(--ink); color:var(--white); padding:90px 0; text-align:center;}
+  .cta-band h2{font-family:var(--display); font-size:clamp(1.9rem,3.6vw,2.7rem); margin:0 0 18px; letter-spacing:-0.02em;}
+  .cta-band p{color:#C9CFCC; max-width:480px; margin:0 auto 34px; font-size:1.1rem;}
+  .cta-band .btn-primary{background:var(--amber); color:var(--ink);}
+  .cta-band .btn-primary:hover{background:var(--amber-soft);}
+
+  footer{padding:50px 0; font-size:0.88rem;}
+  .foot-grid{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;}
+  .foot-links{display:flex; gap:26px;}
+  .foot-links a{color:#3A4A4A;}
+  .foot-links a{text-decoration:none;}
+  .foot-links a:hover{opacity:1; text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header>
+  <div class="nav">
+    <div class="logo"><span class="dot" aria-hidden="true"></span>CareDose</div>
+    <nav class="links nav-mobile-hide" aria-label="Primary">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileNav" aria-label="Open menu">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
+    <button class="nav-cta">Get CareDose</button>
+  </div>
+  <nav class="links" id="mobileNav" aria-label="Primary, mobile">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+  </nav>
+</header>
+
+<main id="main-content">
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">A pillbox that reports back</div>
+      <h1>One box.<br>Two people <em>watching out</em><br>for each other.</h1>
+      <p class="lede">CareDose reminds them to take it. It tells you when they have. No app for them to learn, no guessing for you — just a light, a chime, and a quiet check-in that goes home.</p>
+      <div class="hero-actions">
+        <button class="btn-primary">Order a box — ₹3,499</button>
+        <button class="btn-ghost">See it work ↓</button>
+      </div>
+    </div>
+    <div class="device-stage">
+      <div id="device-svg-holder" role="img" aria-label="Illustration of the CareDose pillbox with a weekly grid of compartments; one lights up at a time and a connected phone shows a Taken confirmation."></div>
+      <button id="pauseAnim" class="btn-ghost" style="margin-top:14px; padding:8px 18px; font-size:0.9rem; min-height:auto;" aria-pressed="false">Pause animation</button>
+    </div>
+  </div>
+</section>
+
+<div class="trust">
+  <div class="wrap">
+    <span>WORKS WITHOUT WIFI</span>
+    <span>NO CAMERAS, EVER</span>
+    <span>SYNCS TO ANY PHARMACY</span>
+    <span>SET UP IN 6 MINUTES</span>
+  </div>
+</div>
+
+<section class="split" id="how">
+  <div class="wrap">
+    <div class="split-head">
+      <h2>Built for two very different mornings</h2>
+      <p>The person taking the pills and the person keeping track of them need almost opposite things. CareDose is designed twice — once for each.</p>
+    </div>
+
+    <div class="toggle" role="tablist" aria-label="View by role">
+      <button class="active" id="tab-elder" role="tab" aria-selected="true" aria-controls="panel-elder" onclick="showPanel('elder', this)">I take the pills</button>
+      <button id="tab-family" role="tab" aria-selected="false" aria-controls="panel-family" onclick="showPanel('family', this)">I check in on someone</button>
+    </div>
+
+    <div class="panel active" id="panel-elder" role="tabpanel" aria-labelledby="tab-elder" tabindex="0">
+      <div class="panel-grid">
+        <div class="card">
+          <span class="num">01</span>
+          <h3>The right slot lights up</h3>
+          <p>No screens, no codes. When it's time, that compartment glows amber and stays lit until you open it — nothing else to remember.</p>
+        </div>
+        <div class="card">
+          <span class="num">02</span>
+          <h3>It speaks the reminder</h3>
+          <p>"Time for your morning blood pressure pill." Said out loud, twice, before it ever buzzes at you.</p>
+        </div>
+        <div class="card">
+          <span class="num">03</span>
+          <h3>Opening it is the whole job</h3>
+          <p>Lifting the lid is the confirmation. There's nothing to tap, log, or explain to anyone.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-family" role="tabpanel" aria-labelledby="tab-family" tabindex="0">
+      <div class="panel-grid">
+        <div class="card">
+          <span class="num">01</span>
+          <h3>A text, not a dashboard</h3>
+          <p>"Dad took his 8am pills" lands as a notification. Open the app only when you actually want the detail.</p>
+        </div>
+        <div class="card">
+          <span class="num">02</span>
+          <h3>Missed doses escalate calmly</h3>
+          <p>One missed alert nudges gently. A pattern of misses reaches you, then a backup contact — before it becomes an emergency.</p>
+        </div>
+        <div class="card">
+          <span class="num">03</span>
+          <h3>Refills before the bottle's empty</h3>
+          <p>CareDose tracks the count and lines up with the pharmacy, so "we're almost out" stops being a Sunday-night surprise.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="loop">
+  <div class="wrap">
+    <div class="loop-inner">
+      <div class="loop-card">
+        <span class="tag elder-tag">At home</span>
+        <h4>Lid opens at 8:04am</h4>
+        <p>A sensor in the hinge notices — nothing worn, nothing carried, nothing to charge separately.</p>
+      </div>
+      <div class="loop-arrow">
+        <svg viewBox="0 0 60 32" fill="none"><path d="M2 16H50" stroke="#2F5D5A" stroke-width="2"/><path d="M42 8L52 16L42 24" stroke="#2F5D5A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="loop-card">
+        <span class="tag family-tag">On your phone</span>
+        <h4>"Taken ✓" at 8:04am</h4>
+        <p>You get on with your day. If the lid doesn't open by 9, you hear about that instead.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="features-head">
+      <h2>The details that make it disappear into daily life</h2>
+      <p>Most of what makes CareDose work is what you never have to think about.</p>
+    </div>
+    <div class="feat-list">
+      <div class="feat"><h4><span class="ico" aria-hidden="true"></span>Offline-first</h4><p>The light and the chime run on the box itself. Wifi only carries the good news to your phone later — it was never required to keep someone on schedule.</p></div>
+      <div class="feat"><h4><span class="ico" aria-hidden="true"></span>No cameras, no microphones listening</h4><p>CareDose knows a lid opened. It doesn't know, watch, or record anything else about the room it's in.</p></div>
+      <div class="feat"><h4><span class="ico" aria-hidden="true"></span>Multiple caregivers, one box</h4><p>Three siblings in three cities can all get the same "taken" notification, so the job never quietly lands on just one of them.</p></div>
+      <div class="feat"><h4><span class="ico" aria-hidden="true"></span>Seven-day, twice-a-day layout</h4><p>Fourteen compartments, clearly labeled by daylight and lamplight icons rather than tiny print — set once a week.</p></div>
+      <div class="feat"><h4><span class="ico" aria-hidden="true"></span>Battery backup, 10 days</h4><p>A power cut doesn't turn into a missed dose. The box keeps its schedule and syncs the moment it's back online.</p></div>
+      <div class="feat"><h4><span class="ico" aria-hidden="true"></span>Works with any pharmacy</h4><p>CareDose doesn't lock you into one pharmacy chain to get refill reminders — it just needs the count.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="quote-section">
+  <div class="wrap">
+    <blockquote>"I stopped calling to ask if she'd taken her pills. I just knew. That one change gave us back our actual phone calls."</blockquote>
+    <cite>— A daughter, three states away</cite>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="split-head">
+      <h2>Simple enough to explain in one sentence</h2>
+      <p>One box, one family plan. No per-caregiver seats.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card">
+        <h3>Just the box</h3>
+        <div class="price">₹3,499</div>
+        <ul>
+          <li>14-compartment CareDose box</li>
+          <li>Voice + light reminders</li>
+          <li>10-day battery backup</li>
+          <li>No monthly fee</li>
+        </ul>
+        <button class="btn-ghost">Buy the box</button>
+      </div>
+      <div class="price-card highlight">
+        <h3>Family Care Plan</h3>
+        <div class="price">₹3,499 <span>+ ₹299/mo</span></div>
+        <ul>
+          <li>Everything in the box, plus</li>
+          <li>Unlimited caregivers on the app</li>
+          <li>Missed-dose escalation</li>
+          <li>Pharmacy refill sync</li>
+          <li>Weekly adherence summary</li>
+        </ul>
+        <button class="btn-primary">Start the plan</button>
+      </div>
+      <div class="price-card">
+        <h3>Care Team</h3>
+        <div class="price">Custom</div>
+        <ul>
+          <li>For home-care agencies</li>
+          <li>Multiple boxes, one console</li>
+          <li>Priority support line</li>
+          <li>Billing by household</li>
+        </ul>
+        <button class="btn-ghost">Talk to us</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap">
+    <h2>Set it up once. Stop wondering every day.</h2>
+    <p>Ships in 3–5 days. Setup takes about as long as making the coffee.</p>
+    <button class="btn-primary">Order a box — ₹3,499</button>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div class="logo" style="font-size:1.1rem;"><span class="dot" aria-hidden="true"></span>CareDose</div>
+    <div class="foot-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#">Support</a>
+    </div>
+    <div style="color:#3A4A4A; font-family:var(--mono); font-size:0.85rem;">© 2026 CareDose</div>
+  </div>
+</footer>
+
+<script>
+function showPanel(name, btn){
+  document.querySelectorAll('.toggle button').forEach(b=>{
+    b.classList.remove('active');
+    b.setAttribute('aria-selected','false');
+  });
+  btn.classList.add('active');
+  btn.setAttribute('aria-selected','true');
+  document.getElementById('panel-elder').classList.toggle('active', name==='elder');
+  document.getElementById('panel-family').classList.toggle('active', name==='family');
+}
+
+// Mobile menu toggle
+const menuBtn = document.getElementById('menuBtn');
+const mobileNav = document.getElementById('mobileNav');
+menuBtn.addEventListener('click', () => {
+  const open = mobileNav.classList.toggle('open');
+  menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+});
+mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  mobileNav.classList.remove('open');
+  menuBtn.setAttribute('aria-expanded', 'false');
+  menuBtn.setAttribute('aria-label', 'Open menu');
+}));
+
+const svgNS = "http://www.w3.org/2000/svg";
+const width = 420, height = 460;
+const svg = document.createElementNS(svgNS, "svg");
+svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+svg.setAttribute("width", "100%");
+svg.style.maxWidth = "420px";
+
+function el(tag, attrs){
+  const e = document.createElementNS(svgNS, tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+svg.appendChild(el("rect", {x:40, y:120, width:280, height:220, rx:22, fill:"#FCFBF8", stroke:"#1B2E2E", "stroke-width":2, "stroke-opacity":0.15}));
+svg.appendChild(el("rect", {x:40, y:120, width:280, height:44, rx:22, fill:"#2F5D5A"}));
+
+const labels = ["MON","TUE","WED","THU","FRI","SAT","SUN"];
+const compartments = [];
+const cols=7, rows=2;
+const gridX = 58, gridY = 182, cw = 36, ch = 66, gap = 5;
+
+for(let r=0;r<rows;r++){
+  for(let c=0;c<cols;c++){
+    const x = gridX + c*(cw+gap);
+    const y = gridY + r*(ch+gap);
+    const rect = el("rect", {x, y, width:cw, height:ch, rx:8, fill:"#E3E5DA", stroke:"#1B2E2E", "stroke-opacity":0.1});
+    svg.appendChild(rect);
+    compartments.push(rect);
+    if(r===0){
+      const t = el("text", {x:x+cw/2, y:y-8, "text-anchor":"middle", "font-family":"IBM Plex Mono", "font-size":"9", fill:"#1B2E2E", "fill-opacity":"0.45"});
+      t.textContent = labels[c];
+      svg.appendChild(t);
+    }
+  }
+}
+
+const phoneX = 178, phoneY = 30;
+svg.appendChild(el("rect", {x:phoneX, y:phoneY, width:88, height:150, rx:16, fill:"#1B2E2E"}));
+svg.appendChild(el("rect", {x:phoneX+5, y:phoneY+5, width:78, height:140, rx:11, fill:"#FCFBF8"}));
+const bubble = el("g", {opacity:"0"});
+bubble.appendChild(el("rect", {x:phoneX+11, y:phoneY+55, width:66, height:34, rx:9, fill:"#DCE7DE"}));
+const bubbleText = el("text", {x:phoneX+44, y:phoneY+70, "text-anchor":"middle", "font-family":"Public Sans", "font-weight":"600", "font-size":"7", fill:"#2F5D5A"});
+bubbleText.textContent = "Taken ✓";
+bubble.appendChild(bubbleText);
+const bubbleTime = el("text", {x:phoneX+44, y:phoneY+80, "text-anchor":"middle", "font-family":"IBM Plex Mono", "font-size":"6", fill:"#2F5D5A", "fill-opacity":"0.7"});
+bubbleTime.textContent = "8:04 AM";
+bubble.appendChild(bubbleTime);
+svg.appendChild(bubble);
+
+const line = el("path", {d:`M ${gridX+18} ${gridY-14} Q 178 60 ${phoneX-2} ${phoneY+75}`, stroke:"#E8A33D", "stroke-width":1.5, "stroke-dasharray":"3 4", fill:"none", opacity:"0"});
+svg.appendChild(line);
+
+document.getElementById("device-svg-holder").appendChild(svg);
+
+let i = 0;
+let timerId = null;
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function cycle(){
+  compartments.forEach(c => { c.setAttribute("fill", "#E3E5DA"); });
+  bubble.setAttribute("opacity","0");
+  line.setAttribute("opacity","0");
+  const active = compartments[i % compartments.length];
+  active.setAttribute("fill", "#E8A33D");
+  setTimeout(()=>{
+    line.setAttribute("opacity","1");
+    bubble.setAttribute("opacity","1");
+  }, 550);
+  i++;
+}
+
+function startAnim(){ cycle(); timerId = setInterval(cycle, 2200); }
+function stopAnim(){ if(timerId){ clearInterval(timerId); timerId = null; } }
+
+// Draw a single static frame, then only auto-loop if the user hasn't asked for reduced motion.
+cycle();
+if(!prefersReducedMotion){ timerId = setInterval(cycle, 2200); }
+
+const pauseBtn = document.getElementById('pauseAnim');
+pauseBtn.addEventListener('click', () => {
+  if(timerId){
+    stopAnim();
+    pauseBtn.textContent = 'Play animation';
+    pauseBtn.setAttribute('aria-pressed','true');
+  } else {
+    startAnim();
+    pauseBtn.textContent = 'Pause animation';
+    pauseBtn.setAttribute('aria-pressed','false');
+  }
+});
+if(prefersReducedMotion){
+  pauseBtn.textContent = 'Play animation';
+  pauseBtn.setAttribute('aria-pressed','true');
+}
+</script>
+
+</body>
+</html>
